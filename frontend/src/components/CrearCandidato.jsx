@@ -7,6 +7,7 @@ function CrearCandidato({ onCreated }) {
     email: '',
     telefono: '',
     canal_origen: '',
+    habilidades: '',
   })
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -22,7 +23,12 @@ function CrearCandidato({ onCreated }) {
     setMessage('')
     setError('')
 
-    if (Object.values(form).some((value) => !value.trim())) {
+    if (
+      !form.nombre.trim() ||
+      !form.email.trim() ||
+      !form.telefono.trim() ||
+      !form.canal_origen.trim()
+    ) {
       setError('Todos los campos son obligatorios.')
       return
     }
@@ -35,8 +41,15 @@ function CrearCandidato({ onCreated }) {
         email: form.email.trim(),
         telefono: form.telefono.trim(),
         canal_origen: form.canal_origen.trim(),
+        habilidades: form.habilidades.trim() || null,
       })
-      setForm({ nombre: '', email: '', telefono: '', canal_origen: '' })
+      setForm({
+        nombre: '',
+        email: '',
+        telefono: '',
+        canal_origen: '',
+        habilidades: '',
+      })
       setMessage('Candidato creado correctamente.')
       onCreated()
     } catch {
@@ -47,7 +60,7 @@ function CrearCandidato({ onCreated }) {
   }
 
   return (
-    <section className="mb-8 rounded-lg bg-white p-6 shadow-md">
+    <section className="mb-8 rounded-xl border border-gray-100 bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
       <h2 className="mb-4 text-2xl font-semibold text-gray-800">Crear candidato</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1">
@@ -60,7 +73,7 @@ function CrearCandidato({ onCreated }) {
             type="text"
             value={form.nombre}
             onChange={handleChange}
-            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+            className="w-full rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
         <div className="space-y-1">
@@ -73,7 +86,20 @@ function CrearCandidato({ onCreated }) {
             type="email"
             value={form.email}
             onChange={handleChange}
-            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+            className="w-full rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
+        <div className="space-y-1">
+          <label htmlFor="habilidades" className="block font-medium text-gray-700">
+            Habilidades
+          </label>
+          <textarea
+            id="habilidades"
+            name="habilidades"
+            value={form.habilidades}
+            onChange={handleChange}
+            placeholder="Ej. Python, SQL, React"
+            className="min-h-24 w-full rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
         <div className="space-y-1">
@@ -86,7 +112,7 @@ function CrearCandidato({ onCreated }) {
             type="tel"
             value={form.telefono}
             onChange={handleChange}
-            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+            className="w-full rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
         <div className="space-y-1">
@@ -102,7 +128,7 @@ function CrearCandidato({ onCreated }) {
             type="text"
             value={form.canal_origen}
             onChange={handleChange}
-            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+            className="w-full rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
         <button

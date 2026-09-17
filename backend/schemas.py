@@ -23,6 +23,8 @@ class PostulacionResponse(PostulacionCreate):
 
     id: int
     fecha_postulacion: datetime
+    score_compatibilidad: int | None = None
+    justificacion_agente: str | None = None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -33,6 +35,7 @@ class CandidatoCreate(BaseModel):
     email: str
     telefono: str | None = None
     canal_origen: str
+    habilidades: str | None = None
     fecha_postulacion: datetime | None = None
 
 

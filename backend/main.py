@@ -8,8 +8,8 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
 
-import models
 from database import SessionLocal, engine
+import models
 from schemas import (
     CandidatoCreate,
     CandidatoResponse,
@@ -166,6 +166,60 @@ def list_vacante_postulaciones(
         }
         for postulacion in postulaciones
     ]
+
+
+@app.post(
+    "/agente/evaluar/{postulacion_id}",
+    response_model=PostulacionResponse,
+)
+def evaluar_postulacion(postulacion_id: int, db: Session = Depends(get_db)):
+    """Evalua la compatibilidad entre un candidato y una vacante."""
+    postulacion = db.get(models.Postulacion, postulacion_id)
+    if postulacion is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Postulacion no encontrada.",
+        )
+
+    candidato = postulacion.candidato
+    vacante = postulacion.vacante
+
+    def evaluar_compatibilidad() -> tuple[int, str]:
+        """Calcula un score según palabras compartidas entre puesto y candidato."""
+
+        def extraer_palabras(texto: str | None) -> set[str]:
+            """Divide por espacios, elimina comas y normaliza el texto."""
+            return {
+                palabra.strip().lower()
+                for palabra in (texto or "").replace(",", " ").split()
+                if palabra.strip()
+            }
+
+        palabras_vacante = extraer_palabras(vacante.descripcion)
+        palabras_candidato = extraer_palabras(candidato.habilidades)
+        coincidencias = palabras_vacante & palabras_candidato
+        score = (
+            round((len(coincidencias) / len(palabras_vacante)) * 100)
+            if palabras_vacante
+            else 0
+        )
+        justificacion = f"Coincide en {len(coincidencias)} palabras clave."
+        return min(score, 100), justificacion
+
+    score, justificacion = evaluar_compatibilidad()
+    postulacion.score_compatibilidad = score
+    postulacion.justificacion_agente = justificacion
+
+    try:
+        db.commit()
+        db.refresh(postulacion)
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se pudo guardar la evaluacion de la postulacion.",
+        ) from exc
+    return postulacion
 
 
 @app.delete("/vacantes/{vacante_id}")

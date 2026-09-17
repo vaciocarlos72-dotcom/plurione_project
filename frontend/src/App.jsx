@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Toaster } from 'react-hot-toast'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import CandidatosList from './components/CandidatosList'
 import CrearCandidato from './components/CrearCandidato'
@@ -10,8 +11,9 @@ import VacantesList from './components/VacantesList'
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" />
       <Navbar />
-      <main className="min-h-screen bg-gray-100">
+      <main className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
         <div className="mx-auto max-w-5xl p-4">
           <Routes>
             <Route path="/" element={<Dashboard />} />

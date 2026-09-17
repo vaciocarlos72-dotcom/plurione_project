@@ -20,6 +20,8 @@ frontend/src/
 - `api.js`: instancia centralizada de Axios para comunicarse con el backend.
 - `components/`: contiene componentes reutilizables de la interfaz.
 - `components/VacantesList.jsx`: consulta y muestra las vacantes disponibles.
+- `components/CrearCandidato.jsx`: formulario para crear candidatos, incluidas
+  sus habilidades.
 
 ## Capa de Comunicación
 
@@ -53,6 +55,12 @@ lógica de negocio de postulaciones utiliza estos estados:
 Al montarse, `useEffect` realiza peticiones asíncronas mediante
 `api.get('/vacantes/')` y `api.get('/candidatos/')`.
 
+El formulario `CrearCandidato.jsx` captura nombre, email, teléfono, canal de
+origen y el campo opcional `habilidades`. Este último se envía en la petición
+`POST /candidatos/` para que el agente pueda compararlo con la descripción de
+una vacante. `CandidatosList.jsx` también permite editar y enviar habilidades
+mediante `PUT /candidatos/{candidato_id}`.
+
 El componente utiliza renderizado condicional para mostrar:
 
 - Un mensaje de carga mientras la petición está en curso.
@@ -72,6 +80,12 @@ El botón **Ver Postulados** consulta `GET
 /vacantes/{vacante_id}/postulaciones` cuando la tarjeta se expande. La respuesta
 se guarda en `postulacionesActivas` y se renderiza debajo de los controles,
 mostrando el nombre del candidato y el estado de cada postulación.
+
+Las acciones de la interfaz usan `react-hot-toast` para mostrar notificaciones
+de éxito y error sin bloquear la navegación. `App.jsx` registra el componente
+`<Toaster />`. Los botones de las tarjetas utilizan iconos de `lucide-react`,
+como `Edit`, `Trash2`, `UserPlus`, `CheckCircle` y `Bot`, junto con sus textos
+descriptivos.
 
 También evita actualizar el estado si el componente ya fue desmontado, lo que
 previene actualizaciones tardías durante cambios de ruta o desmontajes.

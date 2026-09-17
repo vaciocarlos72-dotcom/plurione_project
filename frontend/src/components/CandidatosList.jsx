@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { CheckCircle, Edit, Trash2, X } from 'lucide-react'
+import toast from 'react-hot-toast'
 import api from '../api'
 
 function CandidatosList({ refreshTrigger }) {
@@ -46,8 +48,10 @@ function CandidatosList({ refreshTrigger }) {
       setCandidatos((currentCandidatos) =>
         currentCandidatos.filter((candidato) => candidato.id !== id),
       )
+      toast.success('Candidato eliminado correctamente.')
     } catch {
       setError('No se pudo eliminar el candidato.')
+      toast.error('No se pudo eliminar el candidato.')
     }
   }
 
@@ -58,6 +62,7 @@ function CandidatosList({ refreshTrigger }) {
       email: candidato.email,
       telefono: candidato.telefono || '',
       canal_origen: candidato.canal_origen,
+      habilidades: candidato.habilidades || '',
     })
     setError('')
   }
@@ -78,6 +83,7 @@ function CandidatosList({ refreshTrigger }) {
         email: datosEdicion.email.trim(),
         telefono: datosEdicion.telefono?.trim() || null,
         canal_origen: datosEdicion.canal_origen.trim(),
+        habilidades: datosEdicion.habilidades?.trim() || null,
       })
       setCandidatos((currentCandidatos) =>
         currentCandidatos.map((candidato) =>
@@ -87,8 +93,10 @@ function CandidatosList({ refreshTrigger }) {
       setEditandoId(null)
       setDatosEdicion({})
       setError('')
+      toast.success('Candidato actualizado correctamente.')
     } catch {
       setError('No se pudo actualizar el candidato.')
+      toast.error('No se pudo actualizar el candidato.')
     }
   }
 
@@ -118,7 +126,7 @@ function CandidatosList({ refreshTrigger }) {
         value={busqueda}
         onChange={(event) => setBusqueda(event.target.value)}
         placeholder="Buscar por nombre..."
-        className="mb-6 w-full rounded border border-gray-300 px-4 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+        className="mb-6 w-full rounded border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
         aria-label="Buscar candidatos por nombre"
       />
       {candidatosFiltrados.length === 0 ? (
@@ -128,7 +136,7 @@ function CandidatosList({ refreshTrigger }) {
         {candidatosFiltrados.map((candidato) => (
           <article
             key={candidato.id}
-            className="flex flex-col rounded bg-white p-4 shadow"
+            className="flex flex-col rounded-xl border border-gray-100 bg-white p-4 shadow transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
           >
             {editandoId === candidato.id ? (
               <div className="space-y-3">
@@ -137,6 +145,7 @@ function CandidatosList({ refreshTrigger }) {
                   ['email', 'Email'],
                   ['telefono', 'Telefono'],
                   ['canal_origen', 'Canal de origen'],
+                  ['habilidades', 'Habilidades'],
                 ].map(([field, label]) => (
                   <input
                     key={field}
@@ -148,7 +157,7 @@ function CandidatosList({ refreshTrigger }) {
                         [field]: event.target.value,
                       })
                     }
-                    className="w-full rounded border border-gray-300 px-3 py-2"
+                    className="w-full rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     aria-label={label}
                   />
                 ))}
@@ -156,15 +165,17 @@ function CandidatosList({ refreshTrigger }) {
                   <button
                     type="button"
                     onClick={() => guardarEdicion(candidato.id)}
-                    className="rounded bg-green-600 px-3 py-1 text-white hover:bg-green-700"
+                    className="flex items-center gap-1 rounded bg-emerald-500 px-3 py-1 text-white transition hover:scale-105 hover:bg-emerald-600"
                   >
+                    <CheckCircle size={16} aria-hidden="true" />
                     Guardar
                   </button>
                   <button
                     type="button"
                     onClick={() => setEditandoId(null)}
-                    className="rounded bg-gray-500 px-3 py-1 text-white hover:bg-gray-600"
+                    className="flex items-center gap-1 rounded bg-gray-500 px-3 py-1 text-white transition hover:scale-105 hover:bg-gray-600"
                   >
+                    <X size={16} aria-hidden="true" />
                     Cancelar
                   </button>
                 </div>
@@ -185,15 +196,17 @@ function CandidatosList({ refreshTrigger }) {
                   <button
                     type="button"
                     onClick={() => iniciarEdicion(candidato)}
-                    className="rounded bg-yellow-500 px-3 py-1 text-white hover:bg-yellow-600"
+                    className="flex items-center gap-1 rounded bg-amber-500 px-3 py-1 text-white transition hover:scale-105 hover:bg-amber-600"
                   >
+                    <Edit size={16} aria-hidden="true" />
                     Editar
                   </button>
                   <button
                     type="button"
                     onClick={() => eliminarRegistro(candidato.id)}
-                    className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
+                    className="flex items-center gap-1 rounded bg-rose-500 px-3 py-1 text-white transition hover:scale-105 hover:bg-rose-600"
                   >
+                    <Trash2 size={16} aria-hidden="true" />
                     Eliminar
                   </button>
                 </div>

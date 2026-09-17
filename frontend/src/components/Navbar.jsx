@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 function Navbar() {
   return (
-    <nav className="bg-slate-800 px-6 py-4 text-white">
+    <nav className="bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-4 text-white">
       <div className="mx-auto flex max-w-5xl items-center justify-between">
         <Link to="/" className="text-xl font-bold tracking-tight">
           PluriOne

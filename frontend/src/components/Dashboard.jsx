@@ -53,11 +53,11 @@ function Dashboard() {
         Resumen de Reclutamiento
       </h1>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <article className="rounded-lg bg-blue-600 p-8 text-white shadow-lg">
+        <article className="rounded-xl border border-gray-100 bg-blue-600 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
           <p className="text-lg font-medium text-blue-100">Total de Vacantes</p>
           <p className="mt-2 text-5xl font-bold">{totalVacantes}</p>
         </article>
-        <article className="rounded-lg bg-slate-800 p-8 text-white shadow-lg">
+        <article className="rounded-xl border border-gray-100 bg-slate-800 p-8 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
           <p className="text-lg font-medium text-slate-300">
             Candidatos Registrados
           </p>

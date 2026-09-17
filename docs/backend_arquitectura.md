@@ -36,6 +36,7 @@ erDiagram
 		string email UK
 		string telefono
 		string canal_origen
+		string habilidades
 		datetime fecha_postulacion
 	}
 
@@ -68,3 +69,16 @@ erDiagram
 | `GET` | `/vacantes/` | Lista todas las vacantes registradas. |
 | `POST` | `/postulaciones/` | Crea una postulación vinculando un candidato con una vacante. |
 | `GET` | `/vacantes/{vacante_id}/postulaciones` | Lista las postulaciones de una vacante e incluye los datos de cada candidato. |
+| `POST` | `/agente/evaluar/{postulacion_id}` | Evalúa la compatibilidad de una postulación y guarda su score y justificación. |
+
+## Agente evaluador
+
+El endpoint `POST /agente/evaluar/{postulacion_id}` obtiene la postulación,
+la vacante y el candidato relacionado. El agente normaliza a minúsculas la
+`vacante.descripcion` y `candidato.habilidades`, separa sus palabras por
+espacios y elimina las comas. Después calcula cuántas palabras clave aparecen
+en ambos textos y obtiene un `score_compatibilidad` porcentual entre `0` y
+`100`.
+
+El resultado se guarda en la postulación junto con
+`justificacion_agente`, por ejemplo: `Coincide en 2 palabras clave.`.

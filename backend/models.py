@@ -18,6 +18,7 @@ class Candidato(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     telefono: Mapped[str | None] = mapped_column(String(30), nullable=True)
     canal_origen: Mapped[str] = mapped_column(String(100), nullable=False)
+    habilidades: Mapped[str | None] = mapped_column(String(500), nullable=True)
     fecha_postulacion: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=datetime.utcnow, nullable=False
     )
@@ -51,6 +52,12 @@ class Postulacion(Base):
     )
     estado: Mapped[str] = mapped_column(
         String(50), default="En revisión", nullable=False
+    )
+    score_compatibilidad: Mapped[int | None] = mapped_column(
+        Integer, nullable=True, default=None
+    )
+    justificacion_agente: Mapped[str | None] = mapped_column(
+        String(255), nullable=True, default=None
     )
     candidato_id: Mapped[int] = mapped_column(
         ForeignKey("candidatos.id"), nullable=False

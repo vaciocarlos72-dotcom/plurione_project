@@ -38,7 +38,7 @@ function CrearVacante({ onCreated }) {
   }
 
   return (
-    <section className="mb-8 rounded-lg bg-white p-6 shadow-md">
+    <section className="mb-8 rounded-xl border border-gray-100 bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
       <h2 className="mb-4 text-2xl font-semibold text-gray-800">Crear vacante</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1">
@@ -50,7 +50,7 @@ function CrearVacante({ onCreated }) {
             type="text"
             value={titulo}
             onChange={(event) => setTitulo(event.target.value)}
-            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+            className="w-full rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
         <div className="space-y-1">
@@ -64,7 +64,7 @@ function CrearVacante({ onCreated }) {
             id="descripcion"
             value={descripcion}
             onChange={(event) => setDescripcion(event.target.value)}
-            className="min-h-28 w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+            className="min-h-28 w-full rounded border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
         <button
