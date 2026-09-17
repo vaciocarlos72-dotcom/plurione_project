@@ -6,13 +6,15 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 import models
 from database import SessionLocal, engine
 from schemas import (
     CandidatoCreate,
     CandidatoResponse,
+    PostulacionCreate,
+    PostulacionResponse,
     VacanteCreate,
     VacanteResponse,
 )
@@ -102,6 +104,68 @@ def create_vacante(
 def list_vacantes(db: Session = Depends(get_db)):
     """Devuelve todas las vacantes registradas."""
     return db.scalars(select(models.Vacante)).all()
+
+
+@app.post(
+    "/postulaciones/",
+    response_model=PostulacionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_postulacion(
+    postulacion_data: PostulacionCreate,
+    db: Session = Depends(get_db),
+):
+    """Crea una postulacion vinculando un candidato con una vacante."""
+    candidato = db.get(models.Candidato, postulacion_data.candidato_id)
+    vacante = db.get(models.Vacante, postulacion_data.vacante_id)
+    if candidato is None or vacante is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="El candidato o la vacante no existen.",
+        )
+
+    postulacion = models.Postulacion(**postulacion_data.model_dump())
+    try:
+        db.add(postulacion)
+        db.commit()
+        db.refresh(postulacion)
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se pudo crear la postulacion.",
+        ) from exc
+    return postulacion
+
+
+@app.get("/vacantes/{vacante_id}/postulaciones")
+def list_vacante_postulaciones(
+    vacante_id: int,
+    db: Session = Depends(get_db),
+):
+    """Devuelve las postulaciones de una vacante junto con sus candidatos."""
+    vacante = db.get(models.Vacante, vacante_id)
+    if vacante is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Vacante no encontrada.",
+        )
+
+    postulaciones = db.scalars(
+        select(models.Postulacion)
+        .where(models.Postulacion.vacante_id == vacante_id)
+        .options(joinedload(models.Postulacion.candidato))
+    ).all()
+
+    return [
+        {
+            **PostulacionResponse.model_validate(postulacion).model_dump(),
+            "candidato": CandidatoResponse.model_validate(
+                postulacion.candidato
+            ).model_dump(exclude={"postulaciones"}),
+        }
+        for postulacion in postulaciones
+    ]
 
 
 @app.delete("/vacantes/{vacante_id}")

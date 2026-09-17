@@ -2,8 +2,8 @@
 
 from datetime import datetime
 
-from sqlalchemy import DateTime, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
@@ -21,6 +21,9 @@ class Candidato(Base):
     fecha_postulacion: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=datetime.utcnow, nullable=False
     )
+    postulaciones: Mapped[list["Postulacion"]] = relationship(
+        back_populates="candidato", cascade="all, delete-orphan"
+    )
 
 
 class Vacante(Base):
@@ -32,3 +35,29 @@ class Vacante(Base):
     titulo: Mapped[str] = mapped_column(String(150), nullable=False)
     descripcion: Mapped[str | None] = mapped_column(Text, nullable=True)
     estado: Mapped[str] = mapped_column(String(50), nullable=False)
+    postulaciones: Mapped[list["Postulacion"]] = relationship(
+        back_populates="vacante", cascade="all, delete-orphan"
+    )
+
+
+class Postulacion(Base):
+    """Relaciona un candidato con una vacante y su estado de postulacion."""
+
+    __tablename__ = "postulaciones"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    fecha_postulacion: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime.utcnow, nullable=False
+    )
+    estado: Mapped[str] = mapped_column(
+        String(50), default="En revisión", nullable=False
+    )
+    candidato_id: Mapped[int] = mapped_column(
+        ForeignKey("candidatos.id"), nullable=False
+    )
+    vacante_id: Mapped[int] = mapped_column(
+        ForeignKey("vacantes.id"), nullable=False
+    )
+
+    candidato: Mapped["Candidato"] = relationship(back_populates="postulaciones")
+    vacante: Mapped["Vacante"] = relationship(back_populates="postulaciones")

@@ -5,6 +5,27 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 
+class PostulacionBase(BaseModel):
+    """Datos compartidos de una postulacion."""
+
+    estado: str = "En revisión"
+
+
+class PostulacionCreate(PostulacionBase):
+    """Datos necesarios para crear una postulacion."""
+
+    candidato_id: int
+    vacante_id: int
+
+
+class PostulacionResponse(PostulacionCreate):
+    """Representacion de una postulacion devuelta por la API."""
+
+    id: int
+    fecha_postulacion: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+
 class CandidatoCreate(BaseModel):
     """Datos necesarios para crear un candidato."""
 
@@ -19,6 +40,7 @@ class CandidatoResponse(CandidatoCreate):
     """Representacion de un candidato devuelta por la API."""
 
     id: int
+    postulaciones: list[PostulacionResponse] | None = None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -34,4 +56,5 @@ class VacanteResponse(VacanteCreate):
     """Representacion de una vacante devuelta por la API."""
 
     id: int
+    postulaciones: list[PostulacionResponse] | None = None
     model_config = ConfigDict(from_attributes=True)
