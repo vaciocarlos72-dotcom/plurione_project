@@ -23,7 +23,10 @@ Al importar `backend/main.py`, se importan los modelos y se ejecuta
 `models.Base.metadata.create_all(bind=engine)`. Esto crea las tablas definidas
 que aún no existan en la base de datos antes de atender solicitudes de FastAPI.
 
-El esquema inicial contempla candidatos y vacantes como entidades separadas:
+El esquema contempla candidatos y vacantes como entidades separadas. La tabla
+`Postulacion` funciona como tabla intermedia: registra la relación entre un
+`Candidato` y una `Vacante` mediante llaves foráneas, además de almacenar la
+fecha y el estado de cada postulación.
 
 ```mermaid
 erDiagram
@@ -42,6 +45,17 @@ erDiagram
 		text descripcion
 		string estado
 	}
+
+	POSTULACION {
+		int id PK
+		datetime fecha_postulacion
+		string estado
+		int candidato_id FK
+		int vacante_id FK
+	}
+
+	CANDIDATO ||--o{ POSTULACION : realiza
+	VACANTE ||--o{ POSTULACION : recibe
 ```
 
 ## Endpoints de la API
@@ -52,3 +66,5 @@ erDiagram
 | `GET` | `/candidatos/` | Lista todos los candidatos registrados. |
 | `POST` | `/vacantes/` | Crea una nueva vacante y devuelve el registro persistido. |
 | `GET` | `/vacantes/` | Lista todas las vacantes registradas. |
+| `POST` | `/postulaciones/` | Crea una postulación vinculando un candidato con una vacante. |
+| `GET` | `/vacantes/{vacante_id}/postulaciones` | Lista las postulaciones de una vacante e incluye los datos de cada candidato. |

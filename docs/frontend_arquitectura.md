@@ -39,16 +39,39 @@ repetir la dirección del servidor. `VacantesList.jsx` consume el endpoint
 
 ## Componentes Actuales
 
-`VacantesList.jsx` usa `useState` para administrar tres estados: la colección
-de vacantes, el indicador de carga y el mensaje de error. Al montarse, `useEffect`
-realiza una petición asíncrona mediante `api.get('/vacantes/')`.
+`VacantesList.jsx` usa `useState` para administrar la colección de vacantes, el
+indicador de carga, los mensajes de error y la edición inline. Además, la
+lógica de negocio de postulaciones utiliza estos estados:
+
+- `candidatosDisponibles`: almacena los candidatos obtenidos de `GET
+  /candidatos/` para poblar el selector de asignación.
+- `vacanteExpandida`: guarda el ID de la tarjeta cuya sección de postulados
+  está abierta; permite alternar entre mostrar y ocultar sus datos.
+- `postulacionesActivas`: contiene la lista de postulaciones de la vacante
+  expandida, incluyendo el nombre del candidato y su estado.
+
+Al montarse, `useEffect` realiza peticiones asíncronas mediante
+`api.get('/vacantes/')` y `api.get('/candidatos/')`.
 
 El componente utiliza renderizado condicional para mostrar:
 
 - Un mensaje de carga mientras la petición está en curso.
 - Un mensaje de error si la API no responde correctamente.
 - Un mensaje informativo cuando no existen vacantes.
-- Una tabla con título, descripción y estado cuando hay resultados.
+- Tarjetas con título, descripción, estado, edición, eliminación y asignación
+  de candidatos cuando hay resultados.
+
+### Flujo de postulaciones
+
+Para asignar un candidato, el usuario lo selecciona en la tarjeta de una
+vacante y pulsa **Asignar Candidato**. El componente envía un `POST
+/postulaciones/` con `candidato_id` y `vacante_id`; si la operación es exitosa,
+muestra una notificación de confirmación.
+
+El botón **Ver Postulados** consulta `GET
+/vacantes/{vacante_id}/postulaciones` cuando la tarjeta se expande. La respuesta
+se guarda en `postulacionesActivas` y se renderiza debajo de los controles,
+mostrando el nombre del candidato y el estado de cada postulación.
 
 También evita actualizar el estado si el componente ya fue desmontado, lo que
 previene actualizaciones tardías durante cambios de ruta o desmontajes.

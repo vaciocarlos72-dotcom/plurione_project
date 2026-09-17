@@ -4,10 +4,13 @@ function Navbar() {
   return (
     <nav className="bg-slate-800 px-6 py-4 text-white">
       <div className="mx-auto flex max-w-5xl items-center justify-between">
-        <Link to="/vacantes" className="text-xl font-bold tracking-tight">
+        <Link to="/" className="text-xl font-bold tracking-tight">
           PluriOne
         </Link>
         <div className="flex gap-6">
+          <Link to="/" className="transition hover:text-slate-300">
+            Inicio
+          </Link>
           <Link to="/vacantes" className="transition hover:text-slate-300">
             Vacantes
           </Link>

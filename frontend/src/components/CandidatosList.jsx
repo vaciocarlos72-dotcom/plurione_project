@@ -7,6 +7,7 @@ function CandidatosList({ refreshTrigger }) {
   const [error, setError] = useState('')
   const [editandoId, setEditandoId] = useState(null)
   const [datosEdicion, setDatosEdicion] = useState({})
+  const [busqueda, setBusqueda] = useState('')
 
   useEffect(() => {
     let isMounted = true
@@ -103,13 +104,28 @@ function CandidatosList({ refreshTrigger }) {
     return <p className="text-gray-600">No hay candidatos registrados.</p>
   }
 
+  const candidatosFiltrados = candidatos.filter((candidato) =>
+    candidato.nombre.toLowerCase().includes(busqueda.toLowerCase()),
+  )
+
   return (
     <section>
       <h2 className="mb-4 text-2xl font-semibold text-gray-800">
         Candidatos registrados
       </h2>
+      <input
+        type="text"
+        value={busqueda}
+        onChange={(event) => setBusqueda(event.target.value)}
+        placeholder="Buscar por nombre..."
+        className="mb-6 w-full rounded border border-gray-300 px-4 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+        aria-label="Buscar candidatos por nombre"
+      />
+      {candidatosFiltrados.length === 0 ? (
+        <p className="text-gray-600">No hay coincidencias.</p>
+      ) : (
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {candidatos.map((candidato) => (
+        {candidatosFiltrados.map((candidato) => (
           <article
             key={candidato.id}
             className="flex flex-col rounded bg-white p-4 shadow"
@@ -186,6 +202,7 @@ function CandidatosList({ refreshTrigger }) {
           </article>
         ))}
       </div>
+      )}
     </section>
   )
 }
