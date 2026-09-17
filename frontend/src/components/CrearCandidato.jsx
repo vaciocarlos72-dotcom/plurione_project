@@ -47,55 +47,74 @@ function CrearCandidato({ onCreated }) {
   }
 
   return (
-    <section>
-      <h2>Crear candidato</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="nombre">Nombre</label>
+    <section className="mb-8 rounded-lg bg-white p-6 shadow-md">
+      <h2 className="mb-4 text-2xl font-semibold text-gray-800">Crear candidato</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-1">
+          <label htmlFor="nombre" className="block font-medium text-gray-700">
+            Nombre
+          </label>
           <input
             id="nombre"
             name="nombre"
             type="text"
             value={form.nombre}
             onChange={handleChange}
+            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
           />
         </div>
-        <div>
-          <label htmlFor="email">Email</label>
+        <div className="space-y-1">
+          <label htmlFor="email" className="block font-medium text-gray-700">
+            Email
+          </label>
           <input
             id="email"
             name="email"
             type="email"
             value={form.email}
             onChange={handleChange}
+            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
           />
         </div>
-        <div>
-          <label htmlFor="telefono">Telefono</label>
+        <div className="space-y-1">
+          <label htmlFor="telefono" className="block font-medium text-gray-700">
+            Telefono
+          </label>
           <input
             id="telefono"
             name="telefono"
             type="tel"
             value={form.telefono}
             onChange={handleChange}
+            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
           />
         </div>
-        <div>
-          <label htmlFor="canal_origen">Canal de origen</label>
+        <div className="space-y-1">
+          <label
+            htmlFor="canal_origen"
+            className="block font-medium text-gray-700"
+          >
+            Canal de origen
+          </label>
           <input
             id="canal_origen"
             name="canal_origen"
             type="text"
             value={form.canal_origen}
             onChange={handleChange}
+            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
           />
         </div>
-        <button type="submit" disabled={submitting}>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="rounded bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
           {submitting ? 'Guardando...' : 'Crear candidato'}
         </button>
       </form>
-      {message && <p role="status">{message}</p>}
-      {error && <p role="alert">{error}</p>}
+      {message && <p className="mt-4 text-sm text-green-700" role="status">{message}</p>}
+      {error && <p className="mt-4 text-sm text-red-700" role="alert">{error}</p>}
     </section>
   )
 }

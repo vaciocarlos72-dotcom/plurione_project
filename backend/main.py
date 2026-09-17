@@ -102,3 +102,33 @@ def create_vacante(
 def list_vacantes(db: Session = Depends(get_db)):
     """Devuelve todas las vacantes registradas."""
     return db.scalars(select(models.Vacante)).all()
+
+
+@app.delete("/vacantes/{vacante_id}")
+def delete_vacante(vacante_id: int, db: Session = Depends(get_db)):
+    """Elimina una vacante existente por su identificador."""
+    vacante = db.get(models.Vacante, vacante_id)
+    if vacante is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Vacante no encontrada.",
+        )
+
+    db.delete(vacante)
+    db.commit()
+    return {"mensaje": "Eliminado correctamente"}
+
+
+@app.delete("/candidatos/{candidato_id}")
+def delete_candidato(candidato_id: int, db: Session = Depends(get_db)):
+    """Elimina un candidato existente por su identificador."""
+    candidato = db.get(models.Candidato, candidato_id)
+    if candidato is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Candidato no encontrado.",
+        )
+
+    db.delete(candidato)
+    db.commit()
+    return {"mensaje": "Eliminado correctamente"}

@@ -10,11 +10,15 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Navigate to="/vacantes" replace />} />
-        <Route path="/vacantes" element={<VacantesRoute />} />
-        <Route path="/candidatos" element={<CandidatosRoute />} />
-      </Routes>
+      <main className="min-h-screen bg-gray-100">
+        <div className="mx-auto max-w-5xl p-4">
+          <Routes>
+            <Route path="/" element={<Navigate to="/vacantes" replace />} />
+            <Route path="/vacantes" element={<VacantesRoute />} />
+            <Route path="/candidatos" element={<CandidatosRoute />} />
+          </Routes>
+        </div>
+      </main>
     </BrowserRouter>
   )
 }

@@ -38,32 +38,45 @@ function CrearVacante({ onCreated }) {
   }
 
   return (
-    <section>
-      <h2>Crear vacante</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="titulo">Titulo</label>
+    <section className="mb-8 rounded-lg bg-white p-6 shadow-md">
+      <h2 className="mb-4 text-2xl font-semibold text-gray-800">Crear vacante</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-1">
+          <label htmlFor="titulo" className="block font-medium text-gray-700">
+            Titulo
+          </label>
           <input
             id="titulo"
             type="text"
             value={titulo}
             onChange={(event) => setTitulo(event.target.value)}
+            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
           />
         </div>
-        <div>
-          <label htmlFor="descripcion">Descripcion</label>
+        <div className="space-y-1">
+          <label
+            htmlFor="descripcion"
+            className="block font-medium text-gray-700"
+          >
+            Descripcion
+          </label>
           <textarea
             id="descripcion"
             value={descripcion}
             onChange={(event) => setDescripcion(event.target.value)}
+            className="min-h-28 w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
           />
         </div>
-        <button type="submit" disabled={submitting}>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="rounded bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
           {submitting ? 'Guardando...' : 'Crear vacante'}
         </button>
       </form>
-      {message && <p role="status">{message}</p>}
-      {error && <p role="alert">{error}</p>}
+      {message && <p className="mt-4 text-sm text-green-700" role="status">{message}</p>}
+      {error && <p className="mt-4 text-sm text-red-700" role="alert">{error}</p>}
     </section>
   )
 }
