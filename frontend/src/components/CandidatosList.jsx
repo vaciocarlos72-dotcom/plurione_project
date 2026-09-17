@@ -5,6 +5,8 @@ function CandidatosList({ refreshTrigger }) {
   const [candidatos, setCandidatos] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [editandoId, setEditandoId] = useState(null)
+  const [datosEdicion, setDatosEdicion] = useState({})
 
   useEffect(() => {
     let isMounted = true
@@ -48,6 +50,47 @@ function CandidatosList({ refreshTrigger }) {
     }
   }
 
+  const iniciarEdicion = (candidato) => {
+    setEditandoId(candidato.id)
+    setDatosEdicion({
+      nombre: candidato.nombre,
+      email: candidato.email,
+      telefono: candidato.telefono || '',
+      canal_origen: candidato.canal_origen,
+    })
+    setError('')
+  }
+
+  const guardarEdicion = async (id) => {
+    if (
+      !datosEdicion.nombre?.trim() ||
+      !datosEdicion.email?.trim() ||
+      !datosEdicion.canal_origen?.trim()
+    ) {
+      setError('El nombre, email y canal de origen son obligatorios.')
+      return
+    }
+
+    try {
+      const response = await api.put(`/candidatos/${id}`, {
+        nombre: datosEdicion.nombre.trim(),
+        email: datosEdicion.email.trim(),
+        telefono: datosEdicion.telefono?.trim() || null,
+        canal_origen: datosEdicion.canal_origen.trim(),
+      })
+      setCandidatos((currentCandidatos) =>
+        currentCandidatos.map((candidato) =>
+          candidato.id === id ? response.data : candidato,
+        ),
+      )
+      setEditandoId(null)
+      setDatosEdicion({})
+      setError('')
+    } catch {
+      setError('No se pudo actualizar el candidato.')
+    }
+  }
+
   if (loading) {
     return <p className="text-gray-600">Cargando candidatos...</p>
   }
@@ -71,23 +114,75 @@ function CandidatosList({ refreshTrigger }) {
             key={candidato.id}
             className="flex flex-col rounded bg-white p-4 shadow"
           >
-            <h3 className="text-xl font-semibold text-gray-900">
-              {candidato.nombre}
-            </h3>
-            <p className="mt-2 text-gray-600">{candidato.email}</p>
-            <p className="mt-1 text-gray-600">
-              {candidato.telefono || 'Sin telefono'}
-            </p>
-            <p className="mt-4 text-sm font-medium text-blue-700">
-              Canal: {candidato.canal_origen}
-            </p>
-            <button
-              type="button"
-              onClick={() => eliminarRegistro(candidato.id)}
-              className="mt-4 self-end rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
-            >
-              Eliminar
-            </button>
+            {editandoId === candidato.id ? (
+              <div className="space-y-3">
+                {[
+                  ['nombre', 'Nombre'],
+                  ['email', 'Email'],
+                  ['telefono', 'Telefono'],
+                  ['canal_origen', 'Canal de origen'],
+                ].map(([field, label]) => (
+                  <input
+                    key={field}
+                    type={field === 'email' ? 'email' : 'text'}
+                    value={datosEdicion[field] || ''}
+                    onChange={(event) =>
+                      setDatosEdicion({
+                        ...datosEdicion,
+                        [field]: event.target.value,
+                      })
+                    }
+                    className="w-full rounded border border-gray-300 px-3 py-2"
+                    aria-label={label}
+                  />
+                ))}
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => guardarEdicion(candidato.id)}
+                    className="rounded bg-green-600 px-3 py-1 text-white hover:bg-green-700"
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditandoId(null)}
+                    className="rounded bg-gray-500 px-3 py-1 text-white hover:bg-gray-600"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <h3 className="text-xl font-semibold text-gray-900">
+                  {candidato.nombre}
+                </h3>
+                <p className="mt-2 text-gray-600">{candidato.email}</p>
+                <p className="mt-1 text-gray-600">
+                  {candidato.telefono || 'Sin telefono'}
+                </p>
+                <p className="mt-4 text-sm font-medium text-blue-700">
+                  Canal: {candidato.canal_origen}
+                </p>
+                <div className="mt-4 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => iniciarEdicion(candidato)}
+                    className="rounded bg-yellow-500 px-3 py-1 text-white hover:bg-yellow-600"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => eliminarRegistro(candidato.id)}
+                    className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </>
+            )}
           </article>
         ))}
       </div>

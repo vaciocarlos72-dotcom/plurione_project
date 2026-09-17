@@ -132,3 +132,61 @@ def delete_candidato(candidato_id: int, db: Session = Depends(get_db)):
     db.delete(candidato)
     db.commit()
     return {"mensaje": "Eliminado correctamente"}
+
+
+@app.put("/vacantes/{vacante_id}", response_model=VacanteResponse)
+def update_vacante(
+    vacante_id: int,
+    vacante_data: VacanteCreate,
+    db: Session = Depends(get_db),
+):
+    """Actualiza una vacante existente y devuelve el registro actualizado."""
+    vacante = db.get(models.Vacante, vacante_id)
+    if vacante is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Vacante no encontrada.",
+        )
+
+    for field, value in vacante_data.model_dump(exclude_unset=True).items():
+        setattr(vacante, field, value)
+
+    try:
+        db.commit()
+        db.refresh(vacante)
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se pudo actualizar la vacante.",
+        ) from exc
+    return vacante
+
+
+@app.put("/candidatos/{candidato_id}", response_model=CandidatoResponse)
+def update_candidato(
+    candidato_id: int,
+    candidato_data: CandidatoCreate,
+    db: Session = Depends(get_db),
+):
+    """Actualiza un candidato existente y devuelve el registro actualizado."""
+    candidato = db.get(models.Candidato, candidato_id)
+    if candidato is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Candidato no encontrado.",
+        )
+
+    for field, value in candidato_data.model_dump(exclude_unset=True).items():
+        setattr(candidato, field, value)
+
+    try:
+        db.commit()
+        db.refresh(candidato)
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se pudo actualizar el candidato.",
+        ) from exc
+    return candidato
