@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import {
   Bot,
+  Briefcase,
+  Calendar,
   CheckCircle,
   Edit,
+  MapPin,
   Trash2,
   UserPlus,
   X,
@@ -20,6 +23,17 @@ function VacantesList({ refreshTrigger }) {
   const [candidatoSeleccionado, setCandidatoSeleccionado] = useState({})
   const [vacanteExpandida, setVacanteExpandida] = useState(null)
   const [postulacionesActivas, setPostulacionesActivas] = useState([])
+
+  const getEstadoBadge = (estado) => {
+    const estadoNormalizado = estado.toLowerCase()
+    if (estadoNormalizado.includes('cerr')) {
+      return 'bg-gray-100 text-gray-700'
+    }
+    if (estadoNormalizado.includes('paus')) {
+      return 'bg-amber-100 text-amber-700'
+    }
+    return 'bg-emerald-100 text-emerald-700'
+  }
 
   useEffect(() => {
     let isMounted = true
@@ -256,15 +270,28 @@ function VacantesList({ refreshTrigger }) {
               </div>
             ) : (
               <>
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {vacante.titulo}
-                </h3>
+                <div className="flex items-start gap-2">
+                  <Briefcase className="mt-1 text-indigo-600" size={20} aria-hidden="true" />
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {vacante.titulo}
+                  </h3>
+                </div>
                 <p className="mt-2 text-gray-600">
                   {vacante.descripcion || 'Sin descripcion'}
                 </p>
-                <p className="mt-4 text-sm font-medium text-blue-700">
-                  Estado: {vacante.estado}
-                </p>
+                <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+                  <span className="inline-flex items-center gap-1 text-gray-600">
+                    <MapPin size={15} aria-hidden="true" />
+                    Reclutamiento
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-gray-600">
+                    <Calendar size={15} aria-hidden="true" />
+                    Publicada
+                  </span>
+                  <span className={`rounded-full px-3 py-1 font-semibold ${getEstadoBadge(vacante.estado)}`}>
+                    {vacante.estado}
+                  </span>
+                </div>
                 <div className="mt-4 border-t border-gray-200 pt-4">
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <select
@@ -337,7 +364,13 @@ function VacantesList({ refreshTrigger }) {
                             className="flex justify-between rounded bg-gray-50 px-3 py-2 text-sm"
                           >
                             <span className="font-medium text-gray-800">
-                              {postulacion.candidato?.nombre || 'Candidato'}
+                              <span className="block">
+                                {postulacion.candidato?.nombre || 'Candidato'}
+                              </span>
+                              <span className="mt-1 block text-sm text-gray-600 italic">
+                                {postulacion.justificacion_agente ||
+                                  'Aún no evaluada por el agente.'}
+                              </span>
                             </span>
                             <span className="text-gray-600">
                               {postulacion.estado}

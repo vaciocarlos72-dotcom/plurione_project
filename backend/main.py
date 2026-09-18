@@ -9,6 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
 
 from database import SessionLocal, engine
+from ia_agent import evaluar_candidato_simulado
 import models
 from schemas import (
     CandidatoCreate,
@@ -68,6 +69,30 @@ def create_candidato(
             detail="No se pudo crear el candidato.",
         ) from exc
     return candidato
+
+
+@app.post("/api/v1/webhooks/candidatos", tags=["Integraciones Omnicanal"])
+def receive_candidate_webhook(
+    candidato_data: CandidatoCreate,
+    db: Session = Depends(get_db),
+):
+    """Recibe candidatos enviados automáticamente por fuentes externas."""
+    candidato = models.Candidato(**candidato_data.model_dump(exclude_unset=True))
+    try:
+        db.add(candidato)
+        db.commit()
+        db.refresh(candidato)
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se pudo recibir el candidato vía Webhook.",
+        ) from exc
+
+    return {
+        "mensaje": "Candidato recibido vía Webhook exitosamente",
+        "id": candidato.id,
+    }
 
 
 @app.get("/candidatos/", response_model=list[CandidatoResponse])
@@ -184,31 +209,12 @@ def evaluar_postulacion(postulacion_id: int, db: Session = Depends(get_db)):
     candidato = postulacion.candidato
     vacante = postulacion.vacante
 
-    def evaluar_compatibilidad() -> tuple[int, str]:
-        """Calcula un score según palabras compartidas entre puesto y candidato."""
-
-        def extraer_palabras(texto: str | None) -> set[str]:
-            """Divide por espacios, elimina comas y normaliza el texto."""
-            return {
-                palabra.strip().lower()
-                for palabra in (texto or "").replace(",", " ").split()
-                if palabra.strip()
-            }
-
-        palabras_vacante = extraer_palabras(vacante.descripcion)
-        palabras_candidato = extraer_palabras(candidato.habilidades)
-        coincidencias = palabras_vacante & palabras_candidato
-        score = (
-            round((len(coincidencias) / len(palabras_vacante)) * 100)
-            if palabras_vacante
-            else 0
-        )
-        justificacion = f"Coincide en {len(coincidencias)} palabras clave."
-        return min(score, 100), justificacion
-
-    score, justificacion = evaluar_compatibilidad()
-    postulacion.score_compatibilidad = score
-    postulacion.justificacion_agente = justificacion
+    resultado_agente = evaluar_candidato_simulado(
+        vacante.descripcion,
+        candidato.habilidades,
+    )
+    postulacion.score_compatibilidad = resultado_agente["score"]
+    postulacion.justificacion_agente = resultado_agente["justificacion"]
 
     try:
         db.commit()

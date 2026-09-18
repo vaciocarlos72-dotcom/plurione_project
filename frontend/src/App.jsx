@@ -12,16 +12,18 @@ function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
-      <Navbar />
-      <main className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
-        <div className="mx-auto max-w-5xl p-4">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/vacantes" element={<VacantesRoute />} />
-            <Route path="/candidatos" element={<CandidatosRoute />} />
-          </Routes>
-        </div>
-      </main>
+      <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
+        <Navbar />
+        <main className="ml-64 min-h-screen flex-1">
+          <div className="mx-auto max-w-5xl p-4">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/vacantes" element={<VacantesRoute />} />
+              <Route path="/candidatos" element={<CandidatosRoute />} />
+            </Routes>
+          </div>
+        </main>
+      </div>
     </BrowserRouter>
   )
 }

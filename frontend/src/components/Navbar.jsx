@@ -2,22 +2,21 @@ import { Link } from 'react-router-dom'
 
 function Navbar() {
   return (
-    <nav className="bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-4 text-white">
-      <div className="mx-auto flex max-w-5xl items-center justify-between">
-        <Link to="/" className="text-xl font-bold tracking-tight">
-          PluriOne
+    <nav className="fixed inset-y-0 left-0 z-10 flex h-screen w-64 flex-col bg-slate-900 px-6 py-8 text-white">
+      <Link to="/" className="text-2xl font-bold tracking-tight">
+        PluriOne
+      </Link>
+      <p className="mt-2 text-sm text-slate-400">Portal de Reclutamiento</p>
+      <div className="mt-10 flex flex-col gap-2">
+        <Link to="/" className="rounded-lg px-4 py-3 transition hover:bg-slate-800 hover:text-slate-200">
+          Inicio
         </Link>
-        <div className="flex gap-6">
-          <Link to="/" className="transition hover:text-slate-300">
-            Inicio
-          </Link>
-          <Link to="/vacantes" className="transition hover:text-slate-300">
-            Vacantes
-          </Link>
-          <Link to="/candidatos" className="transition hover:text-slate-300">
-            Candidatos
-          </Link>
-        </div>
+        <Link to="/vacantes" className="rounded-lg px-4 py-3 transition hover:bg-slate-800 hover:text-slate-200">
+          Vacantes
+        </Link>
+        <Link to="/candidatos" className="rounded-lg px-4 py-3 transition hover:bg-slate-800 hover:text-slate-200">
+          Candidatos
+        </Link>
       </div>
     </nav>
   )
