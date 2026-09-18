@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: plurione_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: RapLife16
+      POSTGRES_DB: plurione_db
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    container_name: plurione_backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:RapLife16@db:5432/plurione_db
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    container_name: plurione_frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
